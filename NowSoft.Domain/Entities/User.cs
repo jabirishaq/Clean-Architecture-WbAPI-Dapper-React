@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace NowSoft.Domain.Entities
 {
-    public class User
-    {
-        public int Id { get; set; }
+    public class User : BaseEntity
+    {       
         public string Username { get; set; }
         public string Password { get; set; }
         public string FirstName { get; set; }
