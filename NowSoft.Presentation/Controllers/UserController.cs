@@ -30,8 +30,13 @@ namespace NowSoft.Presentation.Controllers
             var user = await _userRepository.AuthenticateAsync(request.Username, request.Password);
             if (user == null)
                 return Unauthorized(new { message = "Invalid credentials" });
-                        
-            await _userRepository.AddBalanceAsync(user.Id);         // change this logic later    
+
+            decimal currentBalance = await _userRepository.GetBalanceAsync(user.Id);
+
+            if (currentBalance == 0.0m)
+            {
+                await _userRepository.AddBalanceAsync(user.Id);
+            }
 
             //var token = _jwtService.GenerateSecurityToken(user);
             return Ok(new

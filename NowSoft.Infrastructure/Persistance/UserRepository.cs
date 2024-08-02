@@ -43,25 +43,16 @@ namespace NowSoft.Infrastructure.Persistance
         }
         public async Task<decimal> AddBalanceAsync(int userId)
         {
-            // Define the SQL query to check the balance
-            const string checkBalanceQuery = @"SELECT Balance FROM Users WHERE Id = @Id";
+            decimal giftBalance = 5.0m;
 
             // Define the SQL query to update the balance
             const string updateBalanceQuery = @"UPDATE Users SET Balance = Balance + 5.0 WHERE Id = @Id AND Balance = 0.0";
 
             using var connection = _context.CreateConnection();
 
-            // First, retrieve the current balance
-            var currentBalance = await connection.QuerySingleOrDefaultAsync<decimal>(checkBalanceQuery, new { Id = userId });
-
-            // If the current balance is 0.0, update it by adding 5.0
-            if (currentBalance == 0.0m)
-            {
-                await connection.ExecuteAsync(updateBalanceQuery, new { Id = userId });
-                currentBalance = 5.0m; // Set the new balance value in memory after the update
-            }
-
-            return currentBalance;
+            await connection.ExecuteAsync(updateBalanceQuery, new { Id = userId });         
+           
+            return giftBalance;
         }
     }
 
