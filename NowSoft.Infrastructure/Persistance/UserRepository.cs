@@ -41,6 +41,31 @@ namespace NowSoft.Infrastructure.Persistance
             using var connection = _context.CreateConnection();
             return await connection.QueryFirstOrDefaultAsync<User>(query, new { Username = username});
         }
+        public async Task<int> UpdateUserAuthInfoAsync(User loginRequest)
+        {
+            const string query = @"
+            UPDATE Users 
+            SET Device = @Device, 
+            IpAddress = @IpAddress, 
+            Browser = @Browser, 
+            LoginTime = @LoginTime 
+            WHERE Id = @Id";
+
+            using var connection = _context.CreateConnection();
+
+            // Execute the update query and return the number of affected rows
+            var affectedRows = await connection.ExecuteAsync(query, new
+            {
+                Device = loginRequest.Device,
+                IpAddress = loginRequest.IpAddress,
+                Browser = loginRequest.Browser,
+                LoginTime = loginRequest.LoginTime,
+                Id = loginRequest.Id // Ensure this is the correct property for UserId
+            });
+
+            return affectedRows;
+        }
+
 
         public async Task<decimal> GetBalanceAsync(int userId)
         {

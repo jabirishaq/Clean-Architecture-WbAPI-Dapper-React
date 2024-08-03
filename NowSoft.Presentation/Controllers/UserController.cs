@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using NowSoft.Application.Commands.Signup;
 using NowSoft.Application.Commands.UpdateBalance;
+using NowSoft.Application.Commands.UserAuthenticationInfo;
 using NowSoft.Application.Interfaces;
 using NowSoft.Application.Queries.Authenticate;
 using NowSoft.Application.Queries.Balance;
@@ -37,8 +38,13 @@ namespace NowSoft.Presentation.Controllers
 
             var userAuthObj = await _mediator.Send(new UserExistenceQuery { Username = user.Username });
 
-            if(!userAuthObj)
+            if (!userAuthObj)
             {
+                user.LoginTime = DateTime.Now;
+                user.IpAddress = "172.23.5.67";
+                user.Device = "12fdr112233";
+                user.Browser = "Chrome";
+
                 var userId = await _mediator.Send(new SignupCommand { User = user });
                 return Ok();
             }
@@ -49,7 +55,7 @@ namespace NowSoft.Presentation.Controllers
         }
 
         [HttpPost("authenticate")]
-        public async Task<IActionResult> Authenticate([FromBody] LoginRequest request)
+        public async Task<IActionResult> Authenticate([FromBody] User request)
         {
 
             var user = await _mediator.Send(new AuthenticateQuery { Username = request.Username, Password = request.Password }); // using the CQRS via mediatr
@@ -65,6 +71,17 @@ namespace NowSoft.Presentation.Controllers
             }
 
             var token = _jwtService.GenerateToken(user);
+
+            //update the user info into user table          
+
+            request.Id = user.Id;
+            request.IpAddress = "172.23.5.67";
+            request.Device = "12fdr112233";
+            request.Browser = "Chrome";
+            request.LoginTime = DateTime.Now;
+
+            await _mediator.Send(new UserAuthenticationInfoCommand { LoginRequest = user });
+
             return Ok(new
             {
                 user.FirstName,
