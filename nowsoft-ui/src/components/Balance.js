@@ -1,13 +1,23 @@
+// src/components/Balance.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import '../Form.css';
 
-const Balance = ({ token }) => {
+const Balance = () => {
+  const navigate = useNavigate();
   const [balance, setBalance] = useState(0);
 
   useEffect(() => {
-    console.log('Token:', token);
-
     const fetchBalance = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast.error('You must be logged in to view your balance.');
+        navigate('/login'); // Redirect to login if not logged in
+        return;
+      }
+
       try {
         const response = await axios.post(
           'http://localhost:5180/users/auth/balance',
@@ -18,29 +28,24 @@ const Balance = ({ token }) => {
             }
           }
         );
-        console.log('API Response:', response.data.balance);
         setBalance(response.data.balance);
       } catch (error) {
         console.error('Error fetching balance:', error);
         if (error.response) {
-          console.error('Response Error:', error.response.data);
+          toast.error('Failed to fetch balance: ' + (error.response.data.message || 'Server error'));
+        } else {
+          toast.error('Failed to fetch balance. Network error or server did not respond.');
         }
       }
     };
 
-    if (token) {
-      fetchBalance();
-    }
-  }, [token]);
-
-  useEffect(() => {
-    console.log('Updated Balance:', balance);
-  }, [balance]);
+    fetchBalance();
+  }, [navigate]);
 
   return (
-    <div>
-      <h2>Your Balance is</h2>
-      {balance !== null ? <p>{balance}</p> : <p>Loading...</p>}
+    <div className="balance-container">
+      <h2>Your Balance is {balance}</h2>
+      <button onClick={() => navigate('/login')}>Logout</button>
     </div>
   );
 };

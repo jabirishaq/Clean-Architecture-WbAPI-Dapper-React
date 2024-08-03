@@ -1,60 +1,99 @@
+// src/components/Signup.js
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import '../Form.css';
 
 const Signup = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: '',
     password: '',
     firstName: '',
     lastName: '',
-    device: '',
-    browser: '',
-    ipAddress: ''
   });
 
-  const [message, setMessage] = useState('');
+  const [errors, setErrors] = useState({});
+
+  const validate = () => {
+    const newErrors = {};
+    if (!formData.username) newErrors.username = 'Email is required';
+    if (!formData.password) newErrors.password = 'Password is required';
+    if (!formData.firstName) newErrors.firstName = 'First name is required';
+    if (!formData.lastName) newErrors.lastName = 'Last name is required';
+    return newErrors;
+  };
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
     });
+    setErrors({ ...errors, [e.target.name]: '' });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const newErrors = validate();
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
     try {
-      const response = await axios.post('http://localhost:5180/users/signup', formData);
-      setMessage('Signup successful!');
+      await axios.post('http://localhost:5180/users/signup', formData);
+      toast.success('Signup successful!');
+      navigate('/login');
     } catch (error) {
-      // Check if error.response is defined and handle different cases
       if (error.response) {
-        // Server responded with a status other than 2xx
-        console.error('Server responded with an error:', error.response.data);
-        setMessage(`Error: ${error.response.data.error || 'Something went wrong.'}`);
-      } else if (error.request) {
-        // Request was made but no response was received
-        console.error('No response received:', error.request);
-        setMessage('Error: No response from the server. Please try again later.');
+        toast.error(error.response.data.error || 'Signup failed');
       } else {
-        // Something happened in setting up the request
-        console.error('Error in request setup:', error.message);
-        setMessage(`Error: ${error.message}`);
+        toast.error('Signup failed. Please try again.');
       }
     }
   };
 
   return (
-    <div>
+    <div className="form-container">
       <h2>Signup</h2>
       <form onSubmit={handleSubmit}>
-        <input type="text" name="username" placeholder="Email" onChange={handleChange} required />
-        <input type="password" name="password" placeholder="Password" onChange={handleChange} required />
-        <input type="text" name="firstName" placeholder="First Name" onChange={handleChange} required />
-        <input type="text" name="lastName" placeholder="Last Name" onChange={handleChange} required />
+        <input
+          type="text"
+          name="username"
+          placeholder="Email"
+          value={formData.username}
+          onChange={handleChange}
+        />
+        {errors.username && <span className="error">{errors.username}</span>}
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          value={formData.password}
+          onChange={handleChange}
+        />
+        {errors.password && <span className="error">{errors.password}</span>}
+        <input
+          type="text"
+          name="firstName"
+          placeholder="First Name"
+          value={formData.firstName}
+          onChange={handleChange}
+        />
+        {errors.firstName && <span className="error">{errors.firstName}</span>}
+        <input
+          type="text"
+          name="lastName"
+          placeholder="Last Name"
+          value={formData.lastName}
+          onChange={handleChange}
+        />
+        {errors.lastName && <span className="error">{errors.lastName}</span>}
         <button type="submit">Sign Up</button>
+        <button type="button" onClick={() => navigate('/login')}>
+          Already have an account? Login
+        </button>
       </form>
-      <p>{message}</p>
     </div>
   );
 };
