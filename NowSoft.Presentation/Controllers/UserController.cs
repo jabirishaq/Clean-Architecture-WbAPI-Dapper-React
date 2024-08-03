@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using NowSoft.Application.Commands.Signup;
 using NowSoft.Application.Commands.UpdateBalance;
 using NowSoft.Application.Interfaces;
+using NowSoft.Application.Queries.Authenticate;
 using NowSoft.Domain.Entities;
 using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
@@ -36,7 +37,7 @@ namespace NowSoft.Presentation.Controllers
             user.Balance = 0;
             //var userId = await _userRepository.SignUpAsync(user); // using the repository pattern
 
-           var userId = await _mediator.Send(new SignupCommand { User = user });
+           var userId = await _mediator.Send(new SignupCommand { User = user }); // using the CQRS via mediatr
 
             //return Ok(new { Id = userId });
             return Ok();
@@ -45,7 +46,10 @@ namespace NowSoft.Presentation.Controllers
         [HttpPost("authenticate")]
         public async Task<IActionResult> Authenticate([FromBody] LoginRequest request)
         {
-            var user = await _userRepository.AuthenticateAsync(request.Username, request.Password);
+            //var user = await _userRepository.AuthenticateAsync(request.Username, request.Password);
+
+            var user = await _mediator.Send(new AuthenticateQuery { Username = request.Username, Password = request.Password }); // using the CQRS via mediatr
+            
             if (user == null)
                 return Unauthorized(new { message = "Invalid credentials" });
 
