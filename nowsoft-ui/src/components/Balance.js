@@ -1,12 +1,12 @@
-// src/components/Balance.js
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const Balance = ({ token }) => {
-  const [balance, setBalance] = useState(null);
+  const [balance, setBalance] = useState(0);
 
   useEffect(() => {
+    console.log('Token:', token);
+
     const fetchBalance = async () => {
       try {
         const response = await axios.post(
@@ -18,9 +18,13 @@ const Balance = ({ token }) => {
             }
           }
         );
-        setBalance(response.data.Balance);
+        console.log('API Response:', response.data.balance);
+        setBalance(response.data.balance);
       } catch (error) {
         console.error('Error fetching balance:', error);
+        if (error.response) {
+          console.error('Response Error:', error.response.data);
+        }
       }
     };
 
@@ -29,9 +33,13 @@ const Balance = ({ token }) => {
     }
   }, [token]);
 
+  useEffect(() => {
+    console.log('Updated Balance:', balance);
+  }, [balance]);
+
   return (
     <div>
-      <h2>Your Balance</h2>
+      <h2>Your Balance is</h2>
       {balance !== null ? <p>{balance}</p> : <p>Loading...</p>}
     </div>
   );
