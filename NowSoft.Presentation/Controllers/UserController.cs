@@ -14,6 +14,7 @@ using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text.Json;
+using System.Xml;
 
 namespace NowSoft.Presentation.Controllers
 {
@@ -35,6 +36,16 @@ namespace NowSoft.Presentation.Controllers
         {
             try
             {
+                //if (!ModelState.IsValid)
+                //{
+                //    var errors = ModelState
+                //        .Where(ms => ms.Value.Errors.Any())
+                //        .Select(ms => new { Key = ms.Key, Errors = ms.Value.Errors.Select(e => e.ErrorMessage) })
+                //        .ToList();
+
+                //    return BadRequest(new { errors });
+                //}
+
                 user.Balance = 0;
                 bool IsUserExisting = false;
 
@@ -67,7 +78,11 @@ namespace NowSoft.Presentation.Controllers
         {
             try
             {
-
+                //if (!ModelState.IsValid)
+                //{
+                //    // Return 400 Bad Request with validation errors
+                //    return BadRequest(ModelState);
+                //}
 
                 var user = await _mediator.Send(new AuthenticateQuery { Username = request.Username, Password = request.Password }); // using the CQRS via mediatr
 
@@ -113,6 +128,7 @@ namespace NowSoft.Presentation.Controllers
         {
             try
             {
+
                 // Retrieve the user ID from claims
                 var userIdClaim = User.FindFirst(JwtRegisteredClaimNames.Sid);
                 if (userIdClaim == null)
