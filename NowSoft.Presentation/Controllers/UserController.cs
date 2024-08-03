@@ -33,83 +33,108 @@ namespace NowSoft.Presentation.Controllers
         [HttpPost("signup")]
         public async Task<IActionResult> SignUp([FromBody] User user)
         {
-            user.Balance = 0;
-            bool IsUserExisting = false;
-
-            var userAuthObj = await _mediator.Send(new UserExistenceQuery { Username = user.Username });
-
-            if (!userAuthObj)
+            try
             {
-                user.LoginTime = DateTime.Now;
-                user.IpAddress = "172.23.5.67";
-                user.Device = "12fdr112233";
-                user.Browser = "Chrome";
+                user.Balance = 0;
+                bool IsUserExisting = false;
 
-                var userId = await _mediator.Send(new SignupCommand { User = user });
-                return Ok();
+                var userAuthObj = await _mediator.Send(new UserExistenceQuery { Username = user.Username });
+
+                if (!userAuthObj)
+                {
+                    user.LoginTime = DateTime.Now;
+                    user.IpAddress = "172.23.5.67";
+                    user.Device = "12fdr112233";
+                    user.Browser = "Chrome";
+
+                    var userId = await _mediator.Send(new SignupCommand { User = user });
+                    return Ok();
+                }
+                else
+                {
+                    return Conflict(new { error = "User already exists." });
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return Conflict(new { error = "User already exists." });
+                return StatusCode(500, new { error = ex.Message }); // Using ex.Message for general exceptions
             }
+
         }
 
         [HttpPost("authenticate")]
         public async Task<IActionResult> Authenticate([FromBody] User request)
         {
-
-            var user = await _mediator.Send(new AuthenticateQuery { Username = request.Username, Password = request.Password }); // using the CQRS via mediatr
-
-            if (user == null)
-                return Unauthorized(new { message = "Invalid credentials" });
-
-            decimal currentBalance = await _mediator.Send(new BalanceQuery { UserId = user.Id }); // using the CQRS via mediatr
-
-            if (currentBalance == 0.0m)
+            try
             {
-                await _mediator.Send(new AddBalanceCommand { UserId = user.Id });
+
+
+                var user = await _mediator.Send(new AuthenticateQuery { Username = request.Username, Password = request.Password }); // using the CQRS via mediatr
+
+                if (user == null)
+                    return Unauthorized(new { message = "Invalid credentials" });
+
+                decimal currentBalance = await _mediator.Send(new BalanceQuery { UserId = user.Id }); // using the CQRS via mediatr
+
+                if (currentBalance == 0.0m)
+                {
+                    await _mediator.Send(new AddBalanceCommand { UserId = user.Id });
+                }
+
+                var token = _jwtService.GenerateToken(user);
+
+                //update the user info into user table          
+
+                request.Id = user.Id;
+                request.IpAddress = "172.23.5.67";
+                request.Device = "12fdr112233";
+                request.Browser = "Chrome";
+                request.LoginTime = DateTime.Now;
+
+                await _mediator.Send(new UserAuthenticationInfoCommand { LoginRequest = user });
+
+                return Ok(new
+                {
+                    user.FirstName,
+                    user.LastName,
+                    Token = token
+                });
             }
-
-            var token = _jwtService.GenerateToken(user);
-
-            //update the user info into user table          
-
-            request.Id = user.Id;
-            request.IpAddress = "172.23.5.67";
-            request.Device = "12fdr112233";
-            request.Browser = "Chrome";
-            request.LoginTime = DateTime.Now;
-
-            await _mediator.Send(new UserAuthenticationInfoCommand { LoginRequest = user });
-
-            return Ok(new
+            catch (Exception ex)
             {
-                user.FirstName,
-                user.LastName,
-                Token = token
-            });
+                return StatusCode(500, new { error = ex.Message }); // Using ex.Message for general exceptions
+
+            }
         }
 
         [HttpPost("auth/balance")]
         [Authorize]
         public async Task<IActionResult> GetBalance()
         {
-            // Retrieve the user ID from claims
-            var userIdClaim = User.FindFirst(JwtRegisteredClaimNames.Sid);
-            if (userIdClaim == null)
+            try
             {
-                return Unauthorized();
-            }
+                // Retrieve the user ID from claims
+                var userIdClaim = User.FindFirst(JwtRegisteredClaimNames.Sid);
+                if (userIdClaim == null)
+                {
+                    return Unauthorized();
+                }
 
-            // Parse the user ID
-            if (!int.TryParse(userIdClaim.Value, out var userId))
+                // Parse the user ID
+                if (!int.TryParse(userIdClaim.Value, out var userId))
+                {
+                    return BadRequest("Invalid user ID");
+                }
+
+                var balance = await _mediator.Send(new BalanceQuery { UserId = userId }); // using the CQRS via mediatr
+
+                return Ok(new { Balance = balance + " GBP" });
+            }
+            catch (Exception ex)
             {
-                return BadRequest("Invalid user ID");
+                return StatusCode(500, new { error = ex.Message }); // Using ex.Message for general exceptions
+
             }
-
-            var balance = await _mediator.Send(new BalanceQuery { UserId = userId }); // using the CQRS via mediatr
-
-            return Ok(new { Balance = balance + " GBP" });
         }
     }
 }
