@@ -1,25 +1,25 @@
-import logo from './logo.svg';
-import './App.css';
+// src/App.js
 
-function App() {
+import React, { useState } from 'react';
+import Signup from './components/Signup';
+import Login from './components/Login';
+import Balance from './components/Balance';
+
+const App = () => {
+  const [token, setToken] = useState(null);
+
+  const handleLogin = (jwtToken) => {
+    setToken(jwtToken);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1>NowSoft User Management</h1>
+      <Signup />
+      <Login onLogin={handleLogin} />
+      {token && <Balance token={token} />}
     </div>
   );
-}
+};
 
 export default App;
