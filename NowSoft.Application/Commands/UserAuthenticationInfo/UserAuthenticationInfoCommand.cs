@@ -10,6 +10,6 @@ namespace NowSoft.Application.Commands.UserAuthenticationInfo
 {
     public class UserAuthenticationInfoCommand : IRequest
     {
-        public User LoginRequest { get; set; }
+        public User UserInfoObj { get; set; }
     }
 }

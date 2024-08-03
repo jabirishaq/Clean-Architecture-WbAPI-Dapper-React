@@ -21,8 +21,8 @@ namespace NowSoft.Infrastructure.Persistance
 
         public async Task<int> SignUpAsync(User user)
         {
-            const string query = @"INSERT INTO Users (Username, Password, FirstName, LastName, Device, IpAddress, Balance)
-                               VALUES (@Username, @Password, @FirstName, @LastName, @Device, @IpAddress, @Balance);
+            const string query = @"INSERT INTO Users (Username, Password, FirstName, LastName, Device, IpAddress, Balance, Browser)
+                               VALUES (@Username, @Password, @FirstName, @LastName, @Device, @IpAddress, @Balance, @Browser);
                                SELECT CAST(SCOPE_IDENTITY() as int)";
             using var connection = _context.CreateConnection();
             return await connection.QuerySingleAsync<int>(query, user);

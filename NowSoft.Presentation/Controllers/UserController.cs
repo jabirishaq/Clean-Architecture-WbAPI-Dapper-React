@@ -53,11 +53,6 @@ namespace NowSoft.Presentation.Controllers
 
                 if (!userAuthObj)
                 {
-                    user.LoginTime = DateTime.Now;
-                    user.IpAddress = "172.23.5.67";
-                    user.Device = "12fdr112233";
-                    user.Browser = "Chrome";
-
                     var userId = await _mediator.Send(new SignupCommand { User = user });
                     return Ok();
                 }
@@ -97,16 +92,8 @@ namespace NowSoft.Presentation.Controllers
                 }
 
                 var token = _jwtService.GenerateToken(user);
-
-                //update the user info into user table          
-
-                request.Id = user.Id;
-                request.IpAddress = "172.23.5.67";
-                request.Device = "12fdr112233";
-                request.Browser = "Chrome";
-                request.LoginTime = DateTime.Now;
-
-                await _mediator.Send(new UserAuthenticationInfoCommand { LoginRequest = user });
+               
+                await _mediator.Send(new UserAuthenticationInfoCommand { UserInfoObj = user });
 
                 return Ok(new
                 {
@@ -128,7 +115,6 @@ namespace NowSoft.Presentation.Controllers
         {
             try
             {
-
                 // Retrieve the user ID from claims
                 var userIdClaim = User.FindFirst(JwtRegisteredClaimNames.Sid);
                 if (userIdClaim == null)

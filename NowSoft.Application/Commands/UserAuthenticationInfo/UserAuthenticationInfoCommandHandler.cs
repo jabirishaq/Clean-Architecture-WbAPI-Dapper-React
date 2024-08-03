@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using NowSoft.Application.Interfaces;
+using NowSoft.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,12 @@ namespace NowSoft.Application.Commands.UserAuthenticationInfo
 
         public async Task Handle(UserAuthenticationInfoCommand request, CancellationToken cancellationToken)
         {
-            await _userRepository.UpdateUserAuthInfoAsync(request.LoginRequest);
+            request.UserInfoObj.IpAddress = "172.23.5.67";
+            request.UserInfoObj.Device = "12fdr112233";
+            request.UserInfoObj.Browser = "Chrome";
+            request.UserInfoObj.LoginTime = DateTime.Now;
+
+            await _userRepository.UpdateUserAuthInfoAsync(request.UserInfoObj);
         }
     }
 }
