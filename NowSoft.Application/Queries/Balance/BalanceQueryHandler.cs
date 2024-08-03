@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace NowSoft.Application.Queries.Balance
 {
-    public class BalanceQueryHandler : IRequestHandler<BalanceQuery, string>
+    public class BalanceQueryHandler : IRequestHandler<BalanceQuery, decimal>
     {
         private readonly IUserRepository _userRepository;
 
@@ -18,11 +18,11 @@ namespace NowSoft.Application.Queries.Balance
             _userRepository = userRepository;
         }
 
-        public async Task<string> Handle(BalanceQuery request, CancellationToken cancellationToken)
+        public async Task<decimal> Handle(BalanceQuery request, CancellationToken cancellationToken)
         {
             var balance = await _userRepository.GetBalanceAsync(request.UserId);
-            string balanceCurrency = balance + " GBP";
-            return balanceCurrency;
+           
+            return balance;
         }
     }
 }

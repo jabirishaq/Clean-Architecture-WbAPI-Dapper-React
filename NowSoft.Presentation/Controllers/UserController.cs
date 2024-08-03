@@ -20,15 +20,11 @@ namespace NowSoft.Presentation.Controllers
     [Route("users")]
     public class UserController : ControllerBase
     {
-        //
-        private readonly IUserRepository _userRepository;
         private ISender _mediator;
         private readonly ICustomJwtTokenGenerator _jwtService;
 
-
-        public UserController(IUserRepository userRepository, IMediator mediator, ICustomJwtTokenGenerator jwtService)
+        public UserController(IMediator mediator, ICustomJwtTokenGenerator jwtService)
         {
-            _userRepository = userRepository;
             _mediator = mediator;
             _jwtService = jwtService;
         }
@@ -37,7 +33,6 @@ namespace NowSoft.Presentation.Controllers
         public async Task<IActionResult> SignUp([FromBody] User user)
         {
             user.Balance = 0;
-            //var userId = await _userRepository.SignUpAsync(user); // using the repository pattern
 
            var userId = await _mediator.Send(new SignupCommand { User = user }); // using the CQRS via mediatr
 
@@ -48,18 +43,16 @@ namespace NowSoft.Presentation.Controllers
         [HttpPost("authenticate")]
         public async Task<IActionResult> Authenticate([FromBody] LoginRequest request)
         {
-            //var user = await _userRepository.AuthenticateAsync(request.Username, request.Password);
 
             var user = await _mediator.Send(new AuthenticateQuery { Username = request.Username, Password = request.Password }); // using the CQRS via mediatr
             
             if (user == null)
                 return Unauthorized(new { message = "Invalid credentials" });
 
-            decimal currentBalance = await _userRepository.GetBalanceAsync(user.Id); // check the user current balance
+            decimal currentBalance = await _mediator.Send(new BalanceQuery { UserId = user.Id }); // using the CQRS via mediatr
 
             if (currentBalance == 0.0m)
             {
-                //await _userRepository.AddBalanceAsync(user.Id); //updates the current balance if its first time
                 await _mediator.Send(new AddBalanceCommand { UserId = user.Id });
             }
 
@@ -76,11 +69,6 @@ namespace NowSoft.Presentation.Controllers
         [Authorize]
         public async Task<IActionResult> GetBalance()
         {
-            //for Debugging purposes of claims
-            //var claims = User.Claims.Select(c => new { c.Type, c.Value }).ToList();
-            //Console.WriteLine("Claims: " + JsonSerializer.Serialize(claims)); 
-
-
             // Retrieve the user ID from claims
             var userIdClaim = User.FindFirst(JwtRegisteredClaimNames.Sid);
             if (userIdClaim == null)
@@ -94,14 +82,10 @@ namespace NowSoft.Presentation.Controllers
                 return BadRequest("Invalid user ID");
             }
 
-            // Get the balance from the repository
-            //var balance = await _userRepository.GetBalanceAsync(userId);
-
-            //Get the balance from the Query via MediatR
             var balance = await _mediator.Send(new BalanceQuery { UserId = userId }); // using the CQRS via mediatr
 
 
-            return Ok(new { Balance = balance});
+            return Ok(new { Balance = balance + " GBP"});
         }
     }
 }
