@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Azure.Core;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -6,6 +7,7 @@ using NowSoft.Application.Commands.Signup;
 using NowSoft.Application.Commands.UpdateBalance;
 using NowSoft.Application.Interfaces;
 using NowSoft.Application.Queries.Authenticate;
+using NowSoft.Application.Queries.Balance;
 using NowSoft.Domain.Entities;
 using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
@@ -93,8 +95,13 @@ namespace NowSoft.Presentation.Controllers
             }
 
             // Get the balance from the repository
-            var balance = await _userRepository.GetBalanceAsync(userId);
-            return Ok(new { Balance = balance + " GBP"});
+            //var balance = await _userRepository.GetBalanceAsync(userId);
+
+            //Get the balance from the Query via MediatR
+            var balance = await _mediator.Send(new BalanceQuery { UserId = userId }); // using the CQRS via mediatr
+
+
+            return Ok(new { Balance = balance});
         }
     }
 }
