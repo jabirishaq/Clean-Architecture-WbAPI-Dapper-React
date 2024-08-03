@@ -25,9 +25,9 @@ namespace NowSoft.Application.Commands.Signup
         public async Task<int> Handle(SignupCommand request, CancellationToken cancellationToken)
         {
             //checked the user is existing or not
-            var userAuthObj = await _mediator.Send(new UserExistenceQuery { Username = request.User.Username });
+            bool userExists = (await _userRepository.UserExistAsync(request.User.Username))?.Id > 0;
 
-            if (!userAuthObj)
+            if (!userExists)
             {
                 request.User.Balance = 0.0m;
                 request.User.LoginTime = DateTime.Now;
@@ -40,7 +40,7 @@ namespace NowSoft.Application.Commands.Signup
             else
             {
                 return 0;
-            }            
+            }
         }
     }
 }

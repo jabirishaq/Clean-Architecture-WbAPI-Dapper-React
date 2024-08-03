@@ -51,7 +51,7 @@ namespace NowSoft.Presentation.Controllers
 
                 var userId = await _mediator.Send(new SignupCommand { User = user });
 
-                if(userId > 0)
+                if (userId > 0)
                 {
                     return Ok(); // it is as per requirement shared in document to return 200 i.e only the status
                 }
@@ -72,10 +72,21 @@ namespace NowSoft.Presentation.Controllers
         {
             try
             {
-                if (!ModelState.IsValid)
+                //if (!ModelState.IsValid)
+                //{
+                //    // Return 400 Bad Request with validation errors
+                //    return BadRequest(ModelState);
+                //}
+                //
+
+                if (String.IsNullOrEmpty(request.Username))
                 {
-                    // Return 400 Bad Request with validation errors
-                    return BadRequest(ModelState);
+                    return BadRequest(new { message = "Username cannot be null" });
+                }
+
+                if (String.IsNullOrEmpty(request.Password))
+                {
+                    return BadRequest(new { message = "Password cannot be null" });
                 }
 
                 var user = await _mediator.Send(new AuthenticateQuery { Username = request.Username, Password = request.Password }); // using the CQRS via mediatr
@@ -91,7 +102,7 @@ namespace NowSoft.Presentation.Controllers
                 }
 
                 var token = _jwtService.GenerateToken(user);
-               
+
                 await _mediator.Send(new UserAuthenticationInfoCommand { UserInfoObj = user });
 
                 return Ok(new
