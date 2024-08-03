@@ -35,6 +35,13 @@ namespace NowSoft.Infrastructure.Persistance
             return await connection.QueryFirstOrDefaultAsync<User>(query, new { Username = username, Password = password });
         }
 
+        public async Task<User> UserExistAsync(string username)
+        {
+            const string query = @"SELECT * FROM Users WHERE Username = @Username";
+            using var connection = _context.CreateConnection();
+            return await connection.QueryFirstOrDefaultAsync<User>(query, new { Username = username});
+        }
+
         public async Task<decimal> GetBalanceAsync(int userId)
         {
             const string query = @"SELECT Balance FROM Users WHERE Id = @Id";

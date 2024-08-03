@@ -11,6 +11,7 @@ namespace NowSoft.Application.Interfaces
     {
         Task<int> SignUpAsync(User user);
         Task<User> AuthenticateAsync(string username, string password);
+        Task<User> UserExistAsync(string username);
         Task<decimal> GetBalanceAsync(int userId);
         Task<decimal> AddBalanceAsync(int userId);
     }

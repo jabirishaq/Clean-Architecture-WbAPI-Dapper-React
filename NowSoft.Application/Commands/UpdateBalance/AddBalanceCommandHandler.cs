@@ -19,8 +19,7 @@ namespace NowSoft.Application.Commands.UpdateBalance
             _userRepository = userRepository;
         }
 
-        public async Task<decimal> Handle(AddBalanceCommand request, CancellationToken cancellationToken)//        public async Task<int> Handle(SignupCommand request, CancellationToken cancellationToken)
-
+        public async Task<decimal> Handle(AddBalanceCommand request, CancellationToken cancellationToken)
         {
             await _userRepository.AddBalanceAsync(request.UserId);
             return decimal.MaxValue;

@@ -33,11 +33,19 @@ namespace NowSoft.Presentation.Controllers
         public async Task<IActionResult> SignUp([FromBody] User user)
         {
             user.Balance = 0;
+            bool IsUserExisting = false;
 
-           var userId = await _mediator.Send(new SignupCommand { User = user }); // using the CQRS via mediatr
+            var userAuthObj = await _mediator.Send(new UserExistenceQuery { Username = user.Username });
 
-            //return Ok(new { Id = userId });
-            return Ok();
+            if(!userAuthObj)
+            {
+                var userId = await _mediator.Send(new SignupCommand { User = user });
+                return Ok();
+            }
+            else
+            {
+                return Conflict(new { error = "User already exists." });
+            }
         }
 
         [HttpPost("authenticate")]
@@ -45,7 +53,7 @@ namespace NowSoft.Presentation.Controllers
         {
 
             var user = await _mediator.Send(new AuthenticateQuery { Username = request.Username, Password = request.Password }); // using the CQRS via mediatr
-            
+
             if (user == null)
                 return Unauthorized(new { message = "Invalid credentials" });
 
@@ -84,8 +92,7 @@ namespace NowSoft.Presentation.Controllers
 
             var balance = await _mediator.Send(new BalanceQuery { UserId = userId }); // using the CQRS via mediatr
 
-
-            return Ok(new { Balance = balance + " GBP"});
+            return Ok(new { Balance = balance + " GBP" });
         }
     }
 }
