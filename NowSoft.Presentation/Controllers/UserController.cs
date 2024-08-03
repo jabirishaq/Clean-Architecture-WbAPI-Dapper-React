@@ -36,25 +36,24 @@ namespace NowSoft.Presentation.Controllers
         {
             try
             {
-                //if (!ModelState.IsValid)
-                //{
-                //    var errors = ModelState
-                //        .Where(ms => ms.Value.Errors.Any())
-                //        .Select(ms => new { Key = ms.Key, Errors = ms.Value.Errors.Select(e => e.ErrorMessage) })
-                //        .ToList();
+                //Code optimized in Controller
+                //var userAuthObj = await _mediator.Send(new UserExistenceQuery { Username = user.Username });
 
-                //    return BadRequest(new { errors });
+                //if (!userAuthObj)
+                //{
+                //    var userId = await _mediator.Send(new SignupCommand { User = user });
+                //    return Ok();
+                //}
+                //else
+                //{
+                //    return Conflict(new { error = "User already exists." });
                 //}
 
-                user.Balance = 0;
-                bool IsUserExisting = false;
+                var userId = await _mediator.Send(new SignupCommand { User = user });
 
-                var userAuthObj = await _mediator.Send(new UserExistenceQuery { Username = user.Username });
-
-                if (!userAuthObj)
+                if(userId > 0)
                 {
-                    var userId = await _mediator.Send(new SignupCommand { User = user });
-                    return Ok();
+                    return Ok(); // it is as per requirement shared in document to return 200 i.e only the status
                 }
                 else
                 {
@@ -73,11 +72,11 @@ namespace NowSoft.Presentation.Controllers
         {
             try
             {
-                //if (!ModelState.IsValid)
-                //{
-                //    // Return 400 Bad Request with validation errors
-                //    return BadRequest(ModelState);
-                //}
+                if (!ModelState.IsValid)
+                {
+                    // Return 400 Bad Request with validation errors
+                    return BadRequest(ModelState);
+                }
 
                 var user = await _mediator.Send(new AuthenticateQuery { Username = request.Username, Password = request.Password }); // using the CQRS via mediatr
 
