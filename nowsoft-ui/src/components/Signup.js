@@ -18,7 +18,7 @@ const Signup = () => {
 
   const validate = () => {
     const newErrors = {};
-    if (!formData.username) newErrors.username = 'Email is required';
+    if (!formData.username) newErrors.username = 'Username is required';
     if (!formData.password) newErrors.password = 'Password is required';
     if (!formData.firstName) newErrors.firstName = 'First name is required';
     if (!formData.lastName) newErrors.lastName = 'Last name is required';
@@ -60,7 +60,7 @@ const Signup = () => {
         <input
           type="text"
           name="username"
-          placeholder="Email"
+          placeholder="Username"
           value={formData.username}
           onChange={handleChange}
         />
