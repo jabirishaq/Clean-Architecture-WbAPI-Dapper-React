@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using NowSoft.Application.Commands.Signup;
+using NowSoft.Application.Commands.UpdateBalance;
 using NowSoft.Application.Interfaces;
 using NowSoft.Domain.Entities;
 using System.Diagnostics;
@@ -52,7 +53,8 @@ namespace NowSoft.Presentation.Controllers
 
             if (currentBalance == 0.0m)
             {
-                await _userRepository.AddBalanceAsync(user.Id); //updates the current balance if its first time
+                //await _userRepository.AddBalanceAsync(user.Id); //updates the current balance if its first time
+                await _mediator.Send(new AddBalanceCommand { UserId = user.Id });
             }
 
             var token = _jwtService.GenerateToken(user);

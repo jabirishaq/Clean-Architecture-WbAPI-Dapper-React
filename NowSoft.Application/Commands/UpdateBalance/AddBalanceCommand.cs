@@ -11,6 +11,5 @@ namespace NowSoft.Application.Commands.UpdateBalance
     public class AddBalanceCommand : IRequest<decimal>
     {
         public int UserId { get; set; }
-        public decimal Balance { get; set; }
     }
 }
