@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using NowSoft.Application.Commands.Signup;
 using NowSoft.Application.Interfaces;
 using NowSoft.Domain.JwtToken;
 using NowSoft.Infrastructure.Data;
 using NowSoft.Infrastructure.Persistance;
+using System.Collections.Generic;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +16,9 @@ builder.Services.AddScoped<ICustomJwtTokenGenerator, CustomJwtTokenGenerator>();
 
 builder.Services.AddSingleton<DapperContext>(); // Or use AddScoped if necessary
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(SignupCommandHandler).Assembly));
+
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

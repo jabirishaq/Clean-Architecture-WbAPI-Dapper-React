@@ -10,4 +10,13 @@
     <ProjectReference Include="..\NowSoft.Domain\NowSoft.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Queries\Authenticate\" />
+    <Folder Include="Queries\GetBalance\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MediatR" Version="12.2.0" />
+  </ItemGroup>
+
 </Project>

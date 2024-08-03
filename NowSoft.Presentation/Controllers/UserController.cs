@@ -1,7 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using NowSoft.Application.Commands.Signup;
 using NowSoft.Application.Interfaces;
 using NowSoft.Domain.Entities;
+using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text.Json;
@@ -12,12 +16,16 @@ namespace NowSoft.Presentation.Controllers
     [Route("users")]
     public class UserController : ControllerBase
     {
+        //
         private readonly IUserRepository _userRepository;
+        private ISender _mediator;
         private readonly ICustomJwtTokenGenerator _jwtService;
 
-        public UserController(IUserRepository userRepository, ICustomJwtTokenGenerator jwtService)
+
+        public UserController(IUserRepository userRepository, IMediator mediator, ICustomJwtTokenGenerator jwtService)
         {
             _userRepository = userRepository;
+            _mediator = mediator;
             _jwtService = jwtService;
         }
 
@@ -25,8 +33,12 @@ namespace NowSoft.Presentation.Controllers
         public async Task<IActionResult> SignUp([FromBody] User user)
         {
             user.Balance = 0;
-            var userId = await _userRepository.SignUpAsync(user);
-            return Ok(new { Id = userId });
+            //var userId = await _userRepository.SignUpAsync(user); // using the repository pattern
+
+           var userId = await _mediator.Send(new SignupCommand { User = user });
+
+            //return Ok(new { Id = userId });
+            return Ok();
         }
 
         [HttpPost("authenticate")]
@@ -76,7 +88,7 @@ namespace NowSoft.Presentation.Controllers
 
             // Get the balance from the repository
             var balance = await _userRepository.GetBalanceAsync(userId);
-            return Ok(new { Balance = balance });
+            return Ok(new { Balance = balance + " GBP"});
         }
     }
 }
