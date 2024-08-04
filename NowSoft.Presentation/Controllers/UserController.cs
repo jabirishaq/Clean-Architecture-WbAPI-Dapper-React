@@ -84,6 +84,8 @@ namespace NowSoft.Presentation.Controllers
                 var token = _jwtService.GenerateToken(user);
 
                 user.Browser = request.Browser;
+                user.IpAddress = request.IpAddress;
+                user.Device = request.Device;
 
                 await _mediator.Send(new UserAuthenticationInfoCommand { UserInfoObj = user });
 
