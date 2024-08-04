@@ -20,9 +20,6 @@ namespace NowSoft.Application.Commands.UserAuthenticationInfo
 
         public async Task Handle(UserAuthenticationInfoCommand request, CancellationToken cancellationToken)
         {
-            request.UserInfoObj.IpAddress = "172.23.5.67";
-            request.UserInfoObj.Device = "12fdr112233";
-            request.UserInfoObj.Browser = "Chrome";
             request.UserInfoObj.LoginTime = DateTime.Now;
 
             await _userRepository.UpdateUserAuthInfoAsync(request.UserInfoObj);
