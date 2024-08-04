@@ -70,3 +70,9 @@ button:hover {
   margin: 0;
   color: #333;
 }
+
+.toast-custom {
+  max-width: none; /* Allow the toast to expand beyond the default width */
+  white-space: nowrap; /* Prevent wrapping to a new line */
+}
+

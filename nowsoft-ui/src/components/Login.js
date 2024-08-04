@@ -1,5 +1,3 @@
-// src/components/Login.js
-
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -7,15 +5,21 @@ import { toast } from 'react-toastify';
 import { getUserInfo } from '../utils/userUtils';
 import '../Form.css';
 
+// Login component for handling user login
 const Login = () => {
+  // useNavigate hook to programmatically navigate between routes
   const navigate = useNavigate();
+
+  // State to manage form data
   const [formData, setFormData] = useState({
     username: '',
     password: '',
   });
 
+  // State to manage form validation errors
   const [errors, setErrors] = useState({});
 
+  // Function to validate form fields
   const validate = () => {
     const newErrors = {};
     if (!formData.username) newErrors.username = 'Username is required';
@@ -23,34 +27,57 @@ const Login = () => {
     return newErrors;
   };
 
+  // Handle input change events to update form state
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [e.target.name]: e.target.value, // Update the state with new input value
     });
-    setErrors({ ...errors, [e.target.name]: '' });
+    setErrors({ ...errors, [e.target.name]: '' }); // Clear error message for the input
   };
 
+  // Handle form submission
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    const newErrors = validate();
+    e.preventDefault(); // Prevent default form submission
+    const newErrors = validate(); // Validate form inputs
+
+    // If there are validation errors, update error state and exit
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
 
     try {
+      // Get additional user information (e.g., device, browser, IP address)
       const userInfo = await getUserInfo();
 
-      const response = await axios.post('https://localhost:7182/users/authenticate', {
+      // Send a POST request to the authenticate endpoint with form data and additional user info
+      const response = await axios.post('http://localhost:5180/users/authenticate', {
         ...formData,
         ...userInfo, // Add device, browser, and IP address info
       });
 
+      // Save the JWT token in local storage
       localStorage.setItem('token', response.data.token); // Save token
-      toast.success('Login successful!');
+
+      // Show success message and navigate to the balance page on successful login
+      //toast.success('Login successful!');
+      
+      toast.success('Login successful!', {
+        className: 'toast-custom',
+        bodyClassName: 'toast-custom',
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+
       navigate('/balance'); // Navigate to balance page
     } catch (error) {
+      // Handle errors and show appropriate error messages
       if (error.response) {
         toast.error(error.response.data.message || 'Login failed');
       } else {
@@ -59,6 +86,7 @@ const Login = () => {
     }
   };
 
+  // Render the login form
   return (
     <div className="form-container">
       <h2>Login</h2>

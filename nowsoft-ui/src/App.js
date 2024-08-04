@@ -17,7 +17,7 @@ const App = () => {
           <Route path="/signup" element={<Signup />} />
           <Route path="/balance" element={<Balance />} />
         </Routes>
-        <ToastContainer position="top-right" autoClose={5000} hideProgressBar />
+        <ToastContainer position="top-right" autoClose={5000}/>
       </div>
     </Router>
   );
