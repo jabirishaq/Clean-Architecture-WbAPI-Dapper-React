@@ -20,7 +20,7 @@ const Balance = () => {
 
       try {
         const response = await axios.post(
-          'http://localhost:5180/users/auth/balance',
+          'https://localhost:7182/users/auth/balance',
           {},
           {
             headers: {

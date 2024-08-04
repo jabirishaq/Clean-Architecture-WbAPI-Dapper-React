@@ -1,8 +1,10 @@
 // src/components/Signup.js
+
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { getUserInfo } from '../utils/userUtils';
 import '../Form.css';
 
 const Signup = () => {
@@ -28,7 +30,7 @@ const Signup = () => {
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
     setErrors({ ...errors, [e.target.name]: '' });
   };
@@ -40,8 +42,15 @@ const Signup = () => {
       setErrors(newErrors);
       return;
     }
+
     try {
-      await axios.post('http://localhost:5180/users/signup', formData);
+      const userInfo = await getUserInfo();
+
+      const response = await axios.post('http://localhost:5180/users/signup', {
+        ...formData,
+        ...userInfo, // Add device, browser, and IP address info
+      });
+
       toast.success('Signup successful!');
       navigate('/login');
     } catch (error) {

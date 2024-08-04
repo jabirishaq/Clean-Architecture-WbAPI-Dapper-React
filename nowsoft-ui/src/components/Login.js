@@ -1,15 +1,17 @@
 // src/components/Login.js
+
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { getUserInfo } from '../utils/userUtils';
 import '../Form.css';
 
 const Login = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: '',
-    password: ''
+    password: '',
   });
 
   const [errors, setErrors] = useState({});
@@ -24,7 +26,7 @@ const Login = () => {
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
     setErrors({ ...errors, [e.target.name]: '' });
   };
@@ -36,8 +38,15 @@ const Login = () => {
       setErrors(newErrors);
       return;
     }
+
     try {
-      const response = await axios.post('http://localhost:5180/users/authenticate', formData);
+      const userInfo = await getUserInfo();
+
+      const response = await axios.post('https://localhost:7182/users/authenticate', {
+        ...formData,
+        ...userInfo, // Add device, browser, and IP address info
+      });
+
       localStorage.setItem('token', response.data.token); // Save token
       toast.success('Login successful!');
       navigate('/balance'); // Navigate to balance page

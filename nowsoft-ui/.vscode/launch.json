@@ -10,6 +10,30 @@
             "name": "Launch Chrome against localhost",
             "url": "http://localhost:3000",
             "webRoot": "${workspaceFolder}"
-        }
+        },
+        {
+            "type": "firefox",
+            "request": "launch",
+            "name": "Launch Firefox against localhost",
+            "url": "http://localhost:3000", // Make sure this matches the port your server is running on
+            "webRoot": "${workspaceFolder}",
+            "firefoxExecutable": "C:\\Program Files\\Mozilla Firefox\\firefox.exe", // Adjust as necessary
+            "reAttach": true,
+            "pathMappings": [
+              {
+                "url": "webpack:///",
+                "path": "${workspaceFolder}"
+              }
+            ]
+          }
+        // {
+        //     "type": "firefox",
+        //     "request": "launch",
+        //     "name": "Launch Firefox against localhost",
+        //     "url": "http://localhost:3000",
+        //     "webRoot": "${workspaceFolder}",
+        //     "firefoxExecutable": "C:\\Program Files\\Mozilla Firefox\\firefox.exe" // Adjust this path if necessary
+        //   }
+          
     ]
 }
