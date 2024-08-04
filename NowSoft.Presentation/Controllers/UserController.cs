@@ -36,19 +36,6 @@ namespace NowSoft.Presentation.Controllers
         {
             try
             {
-                //Code optimized in Controller
-                //var userAuthObj = await _mediator.Send(new UserExistenceQuery { Username = user.Username });
-
-                //if (!userAuthObj)
-                //{
-                //    var userId = await _mediator.Send(new SignupCommand { User = user });
-                //    return Ok();
-                //}
-                //else
-                //{
-                //    return Conflict(new { error = "User already exists." });
-                //}
-
                 var userId = await _mediator.Send(new SignupCommand { User = user });
 
                 if (userId > 0)
@@ -72,13 +59,6 @@ namespace NowSoft.Presentation.Controllers
         {
             try
             {
-                //if (!ModelState.IsValid)
-                //{
-                //    // Return 400 Bad Request with validation errors
-                //    return BadRequest(ModelState);
-                //}
-                //
-
                 if (String.IsNullOrEmpty(request.Username))
                 {
                     return BadRequest(new { message = "Username cannot be null" });
