@@ -3,7 +3,7 @@ import axios from 'axios';
 // Function to get browser and device information
 export const getUserInfo = async () => {
   const browser = getBrowserInfo();
-  const device = navigator.userAgent;
+  const device = getDeviceInfo();//navigator.userAgent;
   const ipAddress = await getIpAddress();
 
   return {
@@ -33,6 +33,29 @@ const getBrowserInfo = () => {
       return 'Unknown';
     }
   };
+
+  // Function to extract Windows version from the user agent
+const getDeviceInfo = () => {
+    const agent = navigator.userAgent;
+    const windowsMatch = agent.match(/windows nt ([\d.]+)/i);
+    if (windowsMatch) {
+      const version = windowsMatch[1];
+      return `PC Windows ${getWindowsVersion(version)}`;
+    }
+    return 'Unknown Device';
+  };
+  
+  // Helper function to convert Windows version numbers to more readable names
+  const getWindowsVersion = (version) => {
+    switch (version) {
+      case '10.0':
+        return '11';
+      default:
+        return version; // Return the version number if not listed
+    }
+  };
+
+
 
 // Function to fetch the IP address using an external service
 const getIpAddress = async () => {
