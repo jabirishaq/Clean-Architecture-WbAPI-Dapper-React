@@ -20,8 +20,8 @@ const Signup = () => {
     const newErrors = {};
     if (!formData.username) newErrors.username = 'Username is required';
     if (!formData.password) newErrors.password = 'Password is required';
-    if (!formData.firstName) newErrors.firstName = 'First name is required';
-    if (!formData.lastName) newErrors.lastName = 'Last name is required';
+    //if (!formData.firstName) newErrors.firstName = 'First name is required';
+    //if (!formData.lastName) newErrors.lastName = 'Last name is required';
     return newErrors;
   };
 
