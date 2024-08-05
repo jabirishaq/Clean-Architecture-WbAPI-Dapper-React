@@ -30,6 +30,7 @@ namespace NowSoft.Application.Commands.UserAuthenticationInfo
         {
             // Set the login time to the current date and time
             request.UserInfoObj.LoginTime = DateTime.Now;
+            request.UserInfoObj.IsFirstLogin = false;
 
             // Update the user's authentication information in the repository
             await _userRepository.UpdateUserAuthInfoAsync(request.UserInfoObj);

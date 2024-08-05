@@ -26,6 +26,7 @@ namespace NowSoft.Domain.Entities
         public string Browser { get; set; }
         public string IpAddress { get; set; }
         public DateTime? LoginTime { get; set; }
+        public bool IsFirstLogin { get; set; }
         public decimal Balance { get; set; }
         #endregion
     }

@@ -35,6 +35,7 @@ namespace NowSoft.Application.Commands.Signup
             {
                 // Set initial balance and login time for the new user
                 request.User.Balance = 0.0m;
+                request.User.IsFirstLogin = true;
                 request.User.LoginTime = DateTime.Now;
 
                 // Register the new user and return the user ID

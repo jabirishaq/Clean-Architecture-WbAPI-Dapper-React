@@ -26,8 +26,8 @@ namespace NowSoft.Infrastructure.Persistance
         public async Task<int> SignUpAsync(User user)
         {
             // SQL query to insert a new user and retrieve the new user ID
-            const string query = @"INSERT INTO Users (Username, Password, FirstName, LastName, Device, IpAddress, Balance, Browser)
-                                   VALUES (@Username, @Password, @FirstName, @LastName, @Device, @IpAddress, @Balance, @Browser);
+            const string query = @"INSERT INTO Users (Username, Password, FirstName, LastName, Device, IpAddress, Balance, Browser, IsFirstLogin)
+                                   VALUES (@Username, @Password, @FirstName, @LastName, @Device, @IpAddress, @Balance, @Browser, @IsFirstLogin);
                                    SELECT CAST(SCOPE_IDENTITY() as int)";
 
             using var connection = _context.CreateConnection(); // Create a new database connection
@@ -67,6 +67,7 @@ namespace NowSoft.Infrastructure.Persistance
             const string query = @"
             UPDATE Users 
             SET Device = @Device, 
+                IsFirstLogin = @IsFirstLogin, 
                 IpAddress = @IpAddress, 
                 Browser = @Browser, 
                 LoginTime = @LoginTime 
@@ -78,6 +79,7 @@ namespace NowSoft.Infrastructure.Persistance
             var affectedRows = await connection.ExecuteAsync(query, new
             {
                 Device = loginRequest.Device,
+                IsFirstLogin = loginRequest.IsFirstLogin,
                 IpAddress = loginRequest.IpAddress,
                 Browser = loginRequest.Browser,
                 LoginTime = loginRequest.LoginTime,
