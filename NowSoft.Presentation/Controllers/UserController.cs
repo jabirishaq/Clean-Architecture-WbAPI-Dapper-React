@@ -83,14 +83,8 @@ namespace NowSoft.Presentation.Controllers
                     return Unauthorized(new { message = "Invalid credentials" });
                 }
 
-                //// Retrieve current balance for the authenticated user
-                //decimal currentBalance = await _mediator.Send(new BalanceQuery { UserId = user.Id });
-
-                // If balance is zero, add a default balance amount
-                //if (currentBalance == 0.0m)
-                //{
-                //    await _mediator.Send(new AddBalanceCommand { UserId = user.Id });
-                //}
+                //Check the user created is a first time user or not
+                // if yes then give 5.0 GBP gift
 
                 if (user.IsFirstLogin)
                 {
